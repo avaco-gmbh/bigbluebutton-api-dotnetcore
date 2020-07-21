@@ -26,7 +26,7 @@ namespace Avaco.BigBlueButton.Rest
         /// </summary>
         public bool IsSuccess {
             get{
-                return (StatusCode == HttpStatusCode.OK) && (Data.ReturnCode == "SUCCESS"); 
+                return (StatusCode == HttpStatusCode.OK) && (Data?.ReturnCode == "SUCCESS"); 
             }
         }
 
