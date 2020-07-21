@@ -67,7 +67,7 @@ namespace Avaco.BigBlueButton.Api {
             string[] meta = null,
             CreateRequest requestBody = null
         ) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/create", Method.POST, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("create", Method.POST, DataFormat.Xml);
             AddQueryParameter(req, "name", name);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryParameter(req, "attendeePW", attendeePW);
@@ -159,7 +159,7 @@ namespace Avaco.BigBlueButton.Api {
             string customStyleUrl = null
         )
         {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/join", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("join", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "fullName", fullName);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryParameter(req, "password", password);
@@ -226,7 +226,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<IsMeetingRunningResponse>> IsMeetingRunningAsync (string meetingID) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/isMeetingRunning", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("isMeetingRunning", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryChecksum(req, "isMeetingRunning");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -236,7 +236,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<EndResponse>> EndAsync(string meetingID, string password){
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/end", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("end", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryParameter(req, "password", password);
             AddQueryChecksum(req, "end");
@@ -247,7 +247,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<GetMeetingInfoResponse>> GetMeetingInfoAsync (string meetingID) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getMeetingInfo", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getMeetingInfo", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryChecksum(req, "getMeetingInfo");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -257,7 +257,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<GetMeetingsResponse>> GetMeetingsAsync (){
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getMeetings", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getMeetings", Method.GET, DataFormat.Xml);
             AddQueryChecksum(req, "getMeetings");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
@@ -267,7 +267,7 @@ namespace Avaco.BigBlueButton.Api {
 
 
         public async Task<RestApiResponse<GetRecordingsResponse>> GetRecordingsAsync (string meetingID = null, string recordID = null, string state = null, string[] meta = null) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getRecordings", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getRecordings", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryParameter(req, "recordID", recordID);
             AddQueryParameter(req, "state", state);
@@ -286,7 +286,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<PublishRecordingsResponse>> PublishRecordingsAsync (string recordID, bool publish) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/publishRecordings", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("publishRecordings", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "recordID", recordID);
             AddQueryParameter(req, "publish", publish);
             AddQueryChecksum(req, "publishRecordings");
@@ -297,7 +297,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<RestApiResponse<DeleteRecordingsResponse>> DeleteRecordingAsync (string recordID) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/deleteRecordings", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("deleteRecordings", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "recordID", recordID);
             AddQueryChecksum(req, "deleteRecordings");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -307,7 +307,7 @@ namespace Avaco.BigBlueButton.Api {
         }
         
         public async Task<RestApiResponse<UpdateRecordingsResponse>> UpdateRecordingsAsync (string recordID, string[] meta = null) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/updateRecordings", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("updateRecordings", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "recordID", recordID);
             if(meta != null ){
                 foreach(var m in meta){
@@ -324,7 +324,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<string> GetDefaultConfigXmlAsync() {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getDefaultConfigXML", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getDefaultConfigXML", Method.GET, DataFormat.Xml);
             AddQueryChecksum(req, "getDefaultConfigXML");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
@@ -333,7 +333,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<string> SetDefaultConfigXmlAsync(string meetingID, string configXML) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getDefaultConfigXML", Method.POST, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getDefaultConfigXML", Method.POST, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", configXML);
             AddQueryChecksum(req, "setDefaultConfigXML");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -344,7 +344,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<string> GetRecordingTextTracksAsync(string recordID) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/getRecordingTextTracks", Method.GET, DataFormat.Xml);
+            IRestRequest req = new RestRequest ("getRecordingTextTracks", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "recordID", recordID);
             AddQueryChecksum(req, "getRecordingTextTracks");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -354,7 +354,7 @@ namespace Avaco.BigBlueButton.Api {
         }
 
         public async Task<string> PutRecordingTextTrackAsync(string recordID,string kind, string lang, string label) {
-            IRestRequest req = new RestRequest ("/bigbluebutton/api/putRecordingTextTrack", Method.POST, DataFormat.None);
+            IRestRequest req = new RestRequest ("putRecordingTextTrack", Method.POST, DataFormat.None);
             AddQueryParameter(req, "recordID", recordID);
             AddQueryParameter(req, "kind", kind);
             AddQueryParameter(req, "lang", lang);
