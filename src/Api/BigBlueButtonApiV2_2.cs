@@ -155,8 +155,7 @@ namespace Avaco.BigBlueButton.Api {
             string clientURL = null,
             string joinViaHtml5 = "true",
             string guest = "false",
-            string customStyle = null,
-            string customStyleUrl = null
+            string[] userdata = null
         )
         {
             IRestRequest req = new RestRequest ("join", Method.GET, DataFormat.Xml);
@@ -173,8 +172,15 @@ namespace Avaco.BigBlueButton.Api {
             AddQueryParameter(req, "clientURL", clientURL);
             AddQueryParameter(req, "joinViaHtml5", joinViaHtml5);
             AddQueryParameter(req, "guest", guest);
-            AddQueryParameter(req, "userdata-customStyleUrl", customStyleUrl); 
-            AddQueryParameter(req, "userdata-customStyle", customStyle);
+            if (userdata != null)
+            {
+                foreach (var m in userdata)
+                {
+                    var kv = m.Split('=');
+                    if (kv.Length < 2 || !kv[0].StartsWith("userdata-")) throw new ArgumentException("the meta parameters need to be of format userdata-<name>=<value>");
+                    AddQueryParameter(req, kv[0], kv[1]);
+                }
+            }
             AddQueryChecksum(req, "join");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
@@ -195,10 +201,9 @@ namespace Avaco.BigBlueButton.Api {
             string clientURL = null,
             string joinViaHtml5 = "true",
             string guest = "true",
-            string customStyle = null,
-            string customStyleUrl = null
+            string[] userdata = null
         ) {
-            IRestRequest req = JoinBuildRequest(fullName,meetingID,password,createTime,userID,webVoiceConfig,configToken,defaultLayout,avatarURL,redirect,clientURL,joinViaHtml5,guest,customStyle, customStyleUrl);
+            IRestRequest req = JoinBuildRequest(fullName,meetingID,password,createTime,userID,webVoiceConfig,configToken,defaultLayout,avatarURL,redirect,clientURL,joinViaHtml5,guest,userdata);
             var response = await Client.ExecuteAsync<JoinResponse>(req); 
             return new RestApiResponse<JoinResponse>(response.StatusCode, response.Data);
         }
@@ -218,10 +223,10 @@ namespace Avaco.BigBlueButton.Api {
             string clientURL = null,
             string joinViaHtml5 = "true",
             string guest = "true",
-            string customStyle = null,
-            string customStyleUrl = null
-        ){
-            IRestRequest req = JoinBuildRequest(fullName,meetingID,password,createTime,userID,webVoiceConfig,configToken,defaultLayout,avatarURL,redirect,clientURL,joinViaHtml5,guest,customStyle, customStyleUrl);
+            string[] userdata = null
+        )
+        {
+            IRestRequest req = JoinBuildRequest(fullName,meetingID,password,createTime,userID,webVoiceConfig,configToken,defaultLayout,avatarURL,redirect,clientURL,joinViaHtml5,guest,userdata);
             return Client.BuildUri(req);
         }
 

@@ -117,8 +117,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
         /// <param name="clientURL">Some third party apps what to display their own custom client. These apps can pass the URL containing the custom client and when redirect is not set to false, the browser will get redirected to the value of clientURL</param>
         /// <param name="joinViaHtml5">Set to “true” to force the HTML5 client to load for the user</param>
         /// <param name="guest">Set to “true” to indicate that the user is a guest</param>
-        /// <param name="customStyle"> A string containing custom css data to customize the html5 client </param>
-        /// <param name="customStyleUrl"> A url pointing to a custom css data to customize the html5 client</param>
+        /// <param name="userdata"> A string[] containing parameters for customization </param>
         /// <returns> A response object containing the HTTP status code as well as the returned data </returns>
         Task<RestApiResponse<JoinResponse>> JoinAsync (
             string fullName,
@@ -134,8 +133,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
             string clientURL = null,
             string joinViaHtml5 = "true",
             string guest = "true",
-            string customStyle = null,
-            string customStyleUrl = null
+            string[] userdata = null
         );
 
         /// <summary>
@@ -154,8 +152,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
         /// <param name="clientURL">Some third party apps what to display their own custom client. These apps can pass the URL containing the custom client and when redirect is not set to false, the browser will get redirected to the value of clientURL</param>
         /// <param name="joinViaHtml5">Set to “true” to force the HTML5 client to load for the user</param>
         /// <param name="guest">Set to “true” to indicate that the user is a guest</param>
-        /// <param name="customStyle"> A string containing custom css data to customize the html5 client </param>
-        /// <param name="customStyleUrl"> A url pointing to a custom css data to customize the html5 client</param>
+        /// <param name="userdata"> A string[] containing parameters for customization </param>
         /// <returns> The URI to join the meeting </returns>
         Uri JoinUri (
             string fullName,
@@ -171,8 +168,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
             string clientURL = null,
             string joinViaHtml5 = "true",
             string guest = "true",
-            string customStyle = null,
-            string customStyleUrl = null
+            string[] userdata = null
         );
 
         /// <summary>
