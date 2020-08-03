@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 using Avaco.BigBlueButton.Api.Models.Response;
@@ -22,11 +25,24 @@ namespace Avaco.BigBlueButton.Rest
         public TData Data {get; protected set;}
 
         /// <summary>
+        /// The cookies recieved in the response
+        /// </summary>
+        public IDictionary<string, string> Cookies { get; protected set; }
+
+        /// <summary>
         /// This function checks if the request return code of the response data was cosidered as successfull
         /// </summary>
         public bool IsSuccess {
             get{
                 return (StatusCode == HttpStatusCode.OK) && (Data?.ReturnCode == "SUCCESS"); 
+            }
+        }
+
+        public bool HasCookies
+        {
+            get
+            {
+                return Cookies?.Any() ?? false;
             }
         }
 
@@ -38,6 +54,18 @@ namespace Avaco.BigBlueButton.Rest
         public RestApiResponse(HttpStatusCode statusCode, TData data){
             StatusCode = statusCode;
             Data = data;
+        }
+
+        /// <summary>
+        /// The default constructor taking the status code as well as the data object
+        /// </summary>
+        /// <param name="statusCode"> The status code of the http request</param>
+        /// <param name="data"> The returned data object </param>
+        public RestApiResponse(HttpStatusCode statusCode, TData data, IDictionary<string,string> cookies)
+        {
+            StatusCode = statusCode;
+            Data = data;
+            Cookies = cookies;
         }
     }
 }

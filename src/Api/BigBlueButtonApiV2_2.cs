@@ -8,6 +8,7 @@ using Avaco.BigBlueButton.Rest;
 using RestSharp.Serializers;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Avaco.BigBlueButton.Api {
 
@@ -205,7 +206,7 @@ namespace Avaco.BigBlueButton.Api {
         ) {
             IRestRequest req = JoinBuildRequest(fullName,meetingID,password,createTime,userID,webVoiceConfig,configToken,defaultLayout,avatarURL,redirect,clientURL,joinViaHtml5,guest,userdata);
             var response = await Client.ExecuteAsync<JoinResponse>(req); 
-            return new RestApiResponse<JoinResponse>(response.StatusCode, response.Data);
+            return new RestApiResponse<JoinResponse>(response.StatusCode, response.Data, response.Cookies?.ToDictionary(c => c.Name, c => c.Value));
         }
 
 
