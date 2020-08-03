@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Avaco.BigBlueButton.Api.Models.Response {
@@ -37,6 +38,6 @@ namespace Avaco.BigBlueButton.Api.Models.Response {
         /// </summary>
         [XmlElement("url")]
         public string Url {get;set;}
-    
+
     }
 }
