@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using RestSharp;
+using System.Web;
 
 namespace Avaco.BigBlueButton.Api
 {
@@ -136,13 +137,15 @@ namespace Avaco.BigBlueButton.Api
         /// <param name="value">The value that needs to be escaped </param>
         /// <returns> The escaped value </returns>
         public static string EncodeQueryParameter (string value) {
-            return WebUtility.UrlEncode (value.ToString())
-                .Replace ("\\%28", "(")
-                .Replace ("\\%29", ")")
-                .Replace ("\\+", "%20")
-                .Replace ("\\%27", "'")
-                .Replace ("\\%21", "!")
-                .Replace ("\\%7E", "~");
+            //var encoded = HttpUtility.UrlEncode(value.ToString(), Encoding.UTF8);
+            var encoded = Uri.EscapeDataString(value.ToString())
+                .Replace("%20", "+");
+                //.Replace ("\\%28", "(")
+                //.Replace ("\\%29", ")")
+                //.Replace ("\\%27", "'")
+                //.Replace ("\\%21", "!")
+                //.Replace ("\\%7E", "~");
+            return encoded;
         }
 
         /// <summary>
@@ -151,7 +154,7 @@ namespace Avaco.BigBlueButton.Api
         /// <param name="value">The value that needs to be escaped </param>
         /// <returns> The escaped value </returns>
         public static string EncodeQueryParameter (bool? value) {
-            return WebUtility.UrlEncode (Convert.ToString(value).ToLower());
+            return HttpUtility.UrlEncode (Convert.ToString(value).ToLower(), Encoding.UTF8);
         }
 
         /// <summary>
@@ -160,7 +163,7 @@ namespace Avaco.BigBlueButton.Api
         /// <param name="value">The value that needs to be escaped </param>
         /// <returns> The escaped value </returns>
         public static string EncodeQueryParameter (long? value) {
-            return WebUtility.UrlEncode (Convert.ToString(value).ToLower());
+            return HttpUtility.UrlEncode (Convert.ToString(value).ToLower(), Encoding.UTF8);
         }
     }
 }
