@@ -21,7 +21,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
         /// <param name="requestBody"> A Request body containing data for preuploaded slides </param>
         /// <returns> A response object containing the HTTP status code as well as the returned data </returns>
         Task<RestApiResponse<CreateResponse>> CreateAsync ( string meetingID,string name = null,string attendeePW = null,string moderatorPW = null,string welcome = null, CreateRequest requestBody = null);
-        
+
         /// <summary>
         /// This method creates a new meeting room
         /// </summary>
@@ -60,6 +60,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
         /// <param name="lockSettingsLockOnJoinConfigurable"> Setting to lockSettingsLockOnJoinConfigurable=true will allow applying of lockSettingsLockOnJoin param </param>
         /// <param name="guestPolicy"> Default guestPolicy=ALWAYS_ACCEPT. Will set the guest policy for the meeting. The guest policy determines whether or not users who send a join request with guest=true will be allowed to join the meeting. Possible values are ALWAYS_ACCEPT, ALWAYS_DENY, and ASK_MODERATOR</param>
         /// <param name="meta"> You can pass one or more metadata values when creating a meeting. These will be stored by BigBlueButton can be retrieved later via the getMeetingInfo and getRecordings calls </param>
+        /// <param name="allowDuplicateExtUserid">Setting to allowDuplicateExtUserid=false will not allow user to join into a meeting from multiple devices or browser tabs</parm>
         /// <param name="requestBody"> A Request body containing data for preuploaded slides </param>
         /// <returns> A response object containing the HTTP status code as well as the returned data </returns>
         Task<RestApiResponse<CreateResponse>> CreateAsync (
@@ -98,6 +99,7 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
             bool lockSettingsLockOnJoinConfigurable = false,
             string guestPolicy = "ALWAYS_ACCEPT",
             string[] meta = null,
+            bool allowDuplicateExtUserid = true,
             CreateRequest requestBody = null
         );
 
