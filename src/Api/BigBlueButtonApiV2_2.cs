@@ -66,6 +66,7 @@ namespace Avaco.BigBlueButton.Api {
             bool lockSettingsLockOnJoinConfigurable = false,
             string guestPolicy = "ALWAYS_ACCEPT",
             string[] meta = null,
+            bool allowDuplicateExtUserid = true,
             CreateRequest requestBody = null
         ) {
             IRestRequest req = new RestRequest ("create", Method.POST, DataFormat.Xml);
@@ -104,7 +105,8 @@ namespace Avaco.BigBlueButton.Api {
             AddQueryParameter(req, "lockSettingsLockOnJoin", lockSettingsLockOnJoin);
             AddQueryParameter(req, "lockSettingsLockOnJoinConfigurable", lockSettingsLockOnJoinConfigurable);
             AddQueryParameter(req, "guestPolicy", guestPolicy);
-            if(meta != null ){
+            AddQueryParameter(req, "allowDuplicateExtUserid", allowDuplicateExtUserid);
+            if (meta != null ){
                 foreach(var m in meta){
                     var kv = m.Split('=');
                     if(kv.Length<2 || !kv[0].StartsWith("meta_"))throw new ArgumentException("the meta parameters need to be of format meta_<name>=<value>");
