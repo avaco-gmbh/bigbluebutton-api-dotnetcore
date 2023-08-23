@@ -100,6 +100,8 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
             string guestPolicy = "ALWAYS_ACCEPT",
             string[] meta = null,
             bool allowDuplicateExtUserid = true,
+            int meetingExpireWhenLastUserLeftInMinutes = 1,
+            string meetingLayout = "SMART_LAYOUT",
             CreateRequest requestBody = null
         );
 
