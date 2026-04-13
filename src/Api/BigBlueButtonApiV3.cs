@@ -160,6 +160,7 @@ namespace Avaco.BigBlueButton.Api
             AddQueryParameter(req, "lockSettingsDisableMic", lockSettingsDisableMic);
             AddQueryParameter(req, "lockSettingsDisablePrivateChat", lockSettingsDisablePrivateChat);
             AddQueryParameter(req, "lockSettingsDisablePublicChat", lockSettingsDisablePublicChat);
+            AddQueryParameter(req, "lockSettingsDisableNote", lockSettingsDisableNote);
             AddQueryParameter(req, "lockSettingsLockedLayout", lockSettingsLockedLayout);
             AddQueryParameter(req, "lockSettingsLockOnJoin", lockSettingsLockOnJoin);
             AddQueryParameter(req, "lockSettingsLockOnJoinConfigurable", lockSettingsLockOnJoinConfigurable);
@@ -228,7 +229,7 @@ namespace Avaco.BigBlueButton.Api
             string avatarURL = null,
             string redirect = "false",
             string clientURL = null,
-            string guest = "false",
+            string guest = "true",
             string enforceLayout = null,
             string excludeFromDashboard = null,
             string errorRedirectUrl = null,

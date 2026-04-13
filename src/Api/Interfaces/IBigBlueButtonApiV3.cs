@@ -226,10 +226,11 @@ namespace Avaco.BigBlueButton.Api.Interfaces {
 
         /// <summary>
         /// End a meeting. In BBB 3.x, authentication is done via the checksum (shared secret),
-        /// so the password parameter is not required.
+        /// so the password parameter is not required. For backward compatibility with BBB 2.x servers,
+        /// you can still provide the moderator password.
         /// </summary>
         /// <param name="meetingID"> The meeting ID to end </param>
-        /// <param name="password"> The moderator password (optional, for backward compatibility) </param>
+        /// <param name="password"> The moderator password (optional in BBB 3.x, required in BBB 2.x) </param>
         /// <returns> A response object containing the HTTP status code as well as the returned data </returns>
         Task<RestApiResponse<EndResponse>> EndAsyncV3 (string meetingID, string password = null);
 
