@@ -1,4 +1,3 @@
-
 using RestSharp;
 
 using Avaco.BigBlueButton.Api.Interfaces;
@@ -14,12 +13,12 @@ namespace Avaco.BigBlueButton.Api
 {
 
     /// <summary>
-    /// This class implements a client adapter for big blue button servers using version 2.2 and upwards
+    /// This class implements a client adapter for big blue button servers using version 2.2 and upwards.
+    /// Supports BBB API 2.x and 3.x.
     /// </summary>
     /// <inheritdoc/>   
     public class BigBlueButtonApiV2_2 : BigBlueButtonApiBase, IBigBlueButtonApi
     {
-
 
         public BigBlueButtonApiV2_2(string host, string secret, bool ignoreSslErrors) : base(host, secret, ignoreSslErrors)
         {
@@ -30,11 +29,22 @@ namespace Avaco.BigBlueButton.Api
 
         public BigBlueButtonApiV2_2(string secret) : base("http://localhost", secret, false)
         {
+        }
 
+        /// <summary>
+        /// Creates a new instance with a specific checksum hash algorithm for BBB 3.x compatibility
+        /// </summary>
+        /// <param name="host">The server host</param>
+        /// <param name="secret">The secret used for authentication</param>
+        /// <param name="ignoreSslErrors">An indicator if the connection shall ignore SSL errors</param>
+        /// <param name="hashAlgorithm">The hash algorithm to use for checksum generation (default: SHA256)</param>
+        public BigBlueButtonApiV2_2(string host, string secret, bool ignoreSslErrors, ChecksumHashAlgorithm hashAlgorithm) : base(host, secret, ignoreSslErrors, hashAlgorithm)
+        {
         }
 
         public async Task<RestApiResponse<CreateResponse>> CreateAsync(string meetingID, string name = null, string attendeePW = null, string moderatorPW = null, string welcome = null, CreateRequest requestBody = null)
-            => await CreateAsync(meetingID, name, attendeePW, moderatorPW, welcome, requestBody);
+            => await CreateAsync(meetingID, name, attendeePW, moderatorPW, welcome, requestBody: requestBody);
+
         public async Task<RestApiResponse<CreateResponse>> CreateAsync(
             string meetingID,
             string name = null,
@@ -74,6 +84,30 @@ namespace Avaco.BigBlueButton.Api
             bool allowDuplicateExtUserid = true,
             int meetingExpireWhenLastUserLeftInMinutes = 1,
             string meetingLayout = "SMART_LAYOUT",
+            // BBB 2.5+ / 3.x parameters
+            bool? endWhenNoModerator = null,
+            int? endWhenNoModeratorDelayInMinutes = null,
+            bool? meetingKeepEvents = null,
+            bool? allowModsToEjectCameras = null,
+            int? meetingCameraCap = null,
+            int? userCameraCap = null,
+            int? meetingExpireIfNoUserJoinedInMinutes = null,
+            string meetingEndedURL = null,
+            string disabledFeatures = null,
+            string disabledFeaturesExclude = null,
+            bool? notifyRecordingIsOn = null,
+            string presentationUploadExternalUrl = null,
+            string presentationUploadExternalDescription = null,
+            int? learningDashboardCleanupDelayInMinutes = null,
+            bool? recordFullDurationMedia = null,
+            bool? lockSettingsHideUserList = null,
+            bool? lockSettingsHideViewersCursor = null,
+            bool? lockSettingsHideViewersAnnotation = null,
+            string groups = null,
+            bool? breakoutRoomsRecord = null,
+            bool? breakoutRoomsPrivateChatEnabled = null,
+            bool? allowPromoteGuestToModerator = null,
+            bool? preUploadedPresentationOverrideDefault = null,
             CreateRequest requestBody = null
         )
         {
@@ -117,6 +151,30 @@ namespace Avaco.BigBlueButton.Api
             AddQueryParameter(req, "allowDuplicateExtUserid", allowDuplicateExtUserid);
             AddQueryParameter(req, "meetingExpireWhenLastUserLeftInMinutes", meetingExpireWhenLastUserLeftInMinutes);
             AddQueryParameter(req, "meetingLayout", meetingLayout);
+            // BBB 2.5+ / 3.x parameters
+            AddQueryParameter(req, "endWhenNoModerator", endWhenNoModerator);
+            AddQueryParameter(req, "endWhenNoModeratorDelayInMinutes", endWhenNoModeratorDelayInMinutes);
+            AddQueryParameter(req, "meetingKeepEvents", meetingKeepEvents);
+            AddQueryParameter(req, "allowModsToEjectCameras", allowModsToEjectCameras);
+            AddQueryParameter(req, "meetingCameraCap", meetingCameraCap);
+            AddQueryParameter(req, "userCameraCap", userCameraCap);
+            AddQueryParameter(req, "meetingExpireIfNoUserJoinedInMinutes", meetingExpireIfNoUserJoinedInMinutes);
+            AddQueryParameter(req, "meetingEndedURL", meetingEndedURL);
+            AddQueryParameter(req, "disabledFeatures", disabledFeatures);
+            AddQueryParameter(req, "disabledFeaturesExclude", disabledFeaturesExclude);
+            AddQueryParameter(req, "notifyRecordingIsOn", notifyRecordingIsOn);
+            AddQueryParameter(req, "presentationUploadExternalUrl", presentationUploadExternalUrl);
+            AddQueryParameter(req, "presentationUploadExternalDescription", presentationUploadExternalDescription);
+            AddQueryParameter(req, "learningDashboardCleanupDelayInMinutes", learningDashboardCleanupDelayInMinutes);
+            AddQueryParameter(req, "recordFullDurationMedia", recordFullDurationMedia);
+            AddQueryParameter(req, "lockSettingsHideUserList", lockSettingsHideUserList);
+            AddQueryParameter(req, "lockSettingsHideViewersCursor", lockSettingsHideViewersCursor);
+            AddQueryParameter(req, "lockSettingsHideViewersAnnotation", lockSettingsHideViewersAnnotation);
+            AddQueryParameter(req, "groups", groups);
+            AddQueryParameter(req, "breakoutRoomsRecord", breakoutRoomsRecord);
+            AddQueryParameter(req, "breakoutRoomsPrivateChatEnabled", breakoutRoomsPrivateChatEnabled);
+            AddQueryParameter(req, "allowPromoteGuestToModerator", allowPromoteGuestToModerator);
+            AddQueryParameter(req, "preUploadedPresentationOverrideDefault", preUploadedPresentationOverrideDefault);
             if (meta != null)
             {
                 foreach (var m in meta)
@@ -140,38 +198,26 @@ namespace Avaco.BigBlueButton.Api
         }
 
         /// <summary>
-        /// A function to create the join requests 
+        /// A function to create the join requests.
+        /// In BBB 3.x, the 'role' parameter is the preferred way to assign user roles.
+        /// The 'password' parameter is still supported for backward compatibility with BBB 2.x.
         /// </summary>
-        /// <param name="fullName"> The full name that is to be used to identify this user </param>
-        /// <param name="meetingID"> The meeting ID that identifies the meeting you are attempting to join </param>
-        /// <param name="password"> The password used to authenticate as moderator or attendee </param>
-        /// <param name="createTime"> BigBlueButton will ensure it matches the ‘createTime’ for the session </param>
-        /// <param name="userID"> An identifier for this user that will help your application to identify which person this is </param>
-        /// <param name="webVoiceConfig"> If you want to pass in a custom voice-extension when a user joins the voice conference using voip </param>
-        /// <param name="configToken"> The token returned by a setConfigXML API call </param>
-        /// <param name="defaultLayout"> The layout name to be loaded first when the application is loaded </param>
-        /// <param name="avatarURL"> The layout name to be loaded first when the application is loaded </param>
-        /// <param name="redirect"> The default behaviour of the JOIN API is to redirect the browser to the Flash client when the JOIN call succeeds </param>
-        /// <param name="clientURL">Some third party apps what to display their own custom client. These apps can pass the URL containing the custom client and when redirect is not set to false, the browser will get redirected to the value of clientURL</param>
-        /// <param name="joinViaHtml5">Set to “true” to force the HTML5 client to load for the user</param>
-        /// <param name="guest">Set to “true” to indicate that the user is a guest</param>
-        /// <param name="customStyle"> A string containing custom css data to customize the html5 client </param>
-        /// <param name="customStyleUrl"> A url pointing to a custom css data to customize the html5 client</param>
-        /// <returns>The request object used to do the request to the server</returns>
         private IRestRequest JoinBuildRequest(
             string fullName,
             string meetingID,
-            string password,
+            string password = null,
+            string role = null,
             string createTime = null,
             string userID = null,
             string webVoiceConfig = null,
-            string configToken = null,
             string defaultLayout = null,
             string avatarURL = null,
             string redirect = "false",
             string clientURL = null,
-            string joinViaHtml5 = "true",
             string guest = "false",
+            string enforceLayout = null,
+            string excludeFromDashboard = null,
+            string errorRedirectUrl = null,
             string[] userdata = null
         )
         {
@@ -179,22 +225,24 @@ namespace Avaco.BigBlueButton.Api
             AddQueryParameter(req, "fullName", fullName);
             AddQueryParameter(req, "meetingID", meetingID);
             AddQueryParameter(req, "password", password);
+            AddQueryParameter(req, "role", role);
             AddQueryParameter(req, "createTime", createTime);
             AddQueryParameter(req, "userID", userID);
             AddQueryParameter(req, "webVoiceConfig", webVoiceConfig);
-            AddQueryParameter(req, "configToken", configToken);
             AddQueryParameter(req, "defaultLayout", defaultLayout);
             AddQueryParameter(req, "avatarURL", avatarURL);
             AddQueryParameter(req, "redirect", redirect);
             AddQueryParameter(req, "clientURL", clientURL);
-            AddQueryParameter(req, "joinViaHtml5", joinViaHtml5);
             AddQueryParameter(req, "guest", guest);
+            AddQueryParameter(req, "enforceLayout", enforceLayout);
+            AddQueryParameter(req, "excludeFromDashboard", excludeFromDashboard);
+            AddQueryParameter(req, "errorRedirectUrl", errorRedirectUrl);
             if (userdata != null)
             {
                 foreach (var m in userdata)
                 {
                     var kv = m.Split('=');
-                    if (kv.Length < 2 || !kv[0].StartsWith("userdata-")) throw new ArgumentException("the meta parameters need to be of format userdata-<name>=<value>");
+                    if (kv.Length < 2 || !kv[0].StartsWith("userdata-")) throw new ArgumentException("the userdata parameters need to be of format userdata-<name>=<value>");
                     AddQueryParameter(req, kv[0], kv[1]);
                 }
             }
@@ -207,21 +255,23 @@ namespace Avaco.BigBlueButton.Api
         public async Task<RestApiResponse<JoinResponse>> JoinAsync(
             string fullName,
             string meetingID,
-            string password,
+            string password = null,
+            string role = null,
             string createTime = null,
             string userID = null,
             string webVoiceConfig = null,
-            string configToken = null,
             string defaultLayout = null,
             string avatarURL = null,
             string redirect = "false",
             string clientURL = null,
-            string joinViaHtml5 = "true",
             string guest = "true",
+            string enforceLayout = null,
+            string excludeFromDashboard = null,
+            string errorRedirectUrl = null,
             string[] userdata = null
         )
         {
-            IRestRequest req = JoinBuildRequest(fullName, meetingID, password, createTime, userID, webVoiceConfig, configToken, defaultLayout, avatarURL, redirect, clientURL, joinViaHtml5, guest, userdata);
+            IRestRequest req = JoinBuildRequest(fullName, meetingID, password, role, createTime, userID, webVoiceConfig, defaultLayout, avatarURL, redirect, clientURL, guest, enforceLayout, excludeFromDashboard, errorRedirectUrl, userdata);
             var response = await Client.ExecuteAsync<JoinResponse>(req);
             return new RestApiResponse<JoinResponse>(response.StatusCode, response.Data, response.Cookies?.ToDictionary(c => c.Name, c => c.Value));
         }
@@ -231,20 +281,22 @@ namespace Avaco.BigBlueButton.Api
             string fullName,
             string meetingID,
             string password = null,
+            string role = null,
             string createTime = null,
             string userID = null,
             string webVoiceConfig = null,
-            string configToken = null,
             string defaultLayout = null,
             string avatarURL = null,
             string redirect = "false",
             string clientURL = null,
-            string joinViaHtml5 = "true",
             string guest = "true",
+            string enforceLayout = null,
+            string excludeFromDashboard = null,
+            string errorRedirectUrl = null,
             string[] userdata = null
         )
         {
-            IRestRequest req = JoinBuildRequest(fullName, meetingID, password, createTime, userID, webVoiceConfig, configToken, defaultLayout, avatarURL, redirect, clientURL, joinViaHtml5, guest, userdata);
+            IRestRequest req = JoinBuildRequest(fullName, meetingID, password, role, createTime, userID, webVoiceConfig, defaultLayout, avatarURL, redirect, clientURL, guest, enforceLayout, excludeFromDashboard, errorRedirectUrl, userdata);
             return Client.BuildUri(req);
         }
 
@@ -259,7 +311,7 @@ namespace Avaco.BigBlueButton.Api
             return new RestApiResponse<IsMeetingRunningResponse>(response.StatusCode, response.Data);
         }
 
-        public async Task<RestApiResponse<EndResponse>> EndAsync(string meetingID, string password)
+        public async Task<RestApiResponse<EndResponse>> EndAsync(string meetingID, string password = null)
         {
             IRestRequest req = new RestRequest("end", Method.GET, DataFormat.Xml);
             AddQueryParameter(req, "meetingID", meetingID);
@@ -358,6 +410,7 @@ namespace Avaco.BigBlueButton.Api
             return new RestApiResponse<UpdateRecordingsResponse>(response.StatusCode, response.Data);
         }
 
+        [Obsolete("getDefaultConfigXML has been removed in BigBlueButton 3.x. The Flash client is no longer supported.")]
         public async Task<string> GetDefaultConfigXmlAsync()
         {
             IRestRequest req = new RestRequest("getDefaultConfigXML", Method.GET, DataFormat.Xml);
@@ -368,11 +421,12 @@ namespace Avaco.BigBlueButton.Api
             return response.Content;
         }
 
+        [Obsolete("setDefaultConfigXML has been removed in BigBlueButton 3.x. The Flash client is no longer supported.")]
         public async Task<string> SetDefaultConfigXmlAsync(string meetingID, string configXML)
         {
-            IRestRequest req = new RestRequest("getDefaultConfigXML", Method.POST, DataFormat.Xml);
-            AddQueryParameter(req, "meetingID", configXML);
-            AddQueryChecksum(req, "setDefaultConfigXML");
+            IRestRequest req = new RestRequest("setConfigXML", Method.POST, DataFormat.Xml);
+            AddQueryParameter(req, "meetingID", meetingID);
+            AddQueryChecksum(req, "setConfigXML");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
             req.AddXmlBody(configXML);
@@ -387,7 +441,7 @@ namespace Avaco.BigBlueButton.Api
             AddQueryChecksum(req, "getRecordingTextTracks");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
-            var response = await Client.ExecuteAsync<UpdateRecordingsResponse>(req);
+            var response = await Client.ExecuteAsync(req);
             return response.Content;
         }
 
@@ -401,10 +455,39 @@ namespace Avaco.BigBlueButton.Api
             AddQueryChecksum(req, "putRecordingTextTrack");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
-            //req.AddFileBytes()
-            //req.AlwaysMultipartFormData = true;
-            var response = await Client.ExecuteAsync<UpdateRecordingsResponse>(req);
+            var response = await Client.ExecuteAsync(req);
             return response.Content;
+        }
+
+        // BBB 3.x API endpoints
+
+        public async Task<RestApiResponse<InsertDocumentResponse>> InsertDocumentAsync(string meetingID, CreateRequest requestBody)
+        {
+            IRestRequest req = new RestRequest("insertDocument", Method.POST, DataFormat.Xml);
+            AddQueryParameter(req, "meetingID", meetingID);
+            AddQueryChecksum(req, "insertDocument");
+            req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            req.AddHeader("Accept-Encoding", "gzip, deflate, br");
+            if (requestBody != null)
+            {
+                req.XmlSerializer = new DotNetXmlSerializer();
+                req.AddXmlBody(requestBody);
+            }
+            var response = await Client.ExecuteAsync<InsertDocumentResponse>(req);
+            return new RestApiResponse<InsertDocumentResponse>(response.StatusCode, response.Data);
+        }
+
+        public async Task<RestApiResponse<SendChatMessageResponse>> SendChatMessageAsync(string meetingID, string message, string userName = null)
+        {
+            IRestRequest req = new RestRequest("sendChatMessage", Method.GET, DataFormat.Xml);
+            AddQueryParameter(req, "meetingID", meetingID);
+            AddQueryParameter(req, "message", message);
+            AddQueryParameter(req, "userName", userName);
+            AddQueryChecksum(req, "sendChatMessage");
+            req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            req.AddHeader("Accept-Encoding", "gzip, deflate, br");
+            var response = await Client.ExecuteAsync<SendChatMessageResponse>(req);
+            return new RestApiResponse<SendChatMessageResponse>(response.StatusCode, response.Data);
         }
     }
 }
