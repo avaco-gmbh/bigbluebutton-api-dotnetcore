@@ -48,14 +48,14 @@ namespace Avaco.BigBlueButton.Api
 
         /// <summary>
         /// A constructor utilizing a host as well as a secret to setup a connetion to a big blue button server.
-        /// Uses SHA256 checksum algorithm by default.
+        /// Uses SHA1 checksum algorithm by default for backward compatibility with BBB 2.x.
         /// </summary>
         /// <param name="host"> The server host </param>
         /// <param name="secret"> The secret used for authentication</param>
         public BigBlueButtonApiBase (string host, string secret) {
             Initialize (host, false);
             Secret = secret;
-            HashAlgorithm = ChecksumHashAlgorithm.SHA256;
+            HashAlgorithm = ChecksumHashAlgorithm.SHA1;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Avaco.BigBlueButton.Api
         public BigBlueButtonApiBase (string host, string secret, bool ignoreSslErrors) {
             Initialize (host, ignoreSslErrors);
             Secret = secret;
-            HashAlgorithm = ChecksumHashAlgorithm.SHA256;
+            HashAlgorithm = ChecksumHashAlgorithm.SHA1;
         }
 
         /// <summary>
