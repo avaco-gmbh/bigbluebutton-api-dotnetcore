@@ -30,7 +30,17 @@ namespace Avaco.BigBlueButton.Api
 
         public BigBlueButtonApiV2_2(string secret) : base("http://localhost", secret, false)
         {
+        }
 
+        /// <summary>
+        /// Creates a new instance with a specific checksum hash algorithm
+        /// </summary>
+        /// <param name="host">The server host</param>
+        /// <param name="secret">The secret used for authentication</param>
+        /// <param name="ignoreSslErrors">An indicator if the connection shall ignore SSL errors</param>
+        /// <param name="hashAlgorithm">The hash algorithm to use for checksum generation</param>
+        public BigBlueButtonApiV2_2(string host, string secret, bool ignoreSslErrors, ChecksumHashAlgorithm hashAlgorithm) : base(host, secret, ignoreSslErrors, hashAlgorithm)
+        {
         }
 
         public async Task<RestApiResponse<CreateResponse>> CreateAsync(string meetingID, string name = null, string attendeePW = null, string moderatorPW = null, string welcome = null, CreateRequest requestBody = null)
@@ -370,9 +380,9 @@ namespace Avaco.BigBlueButton.Api
 
         public async Task<string> SetDefaultConfigXmlAsync(string meetingID, string configXML)
         {
-            IRestRequest req = new RestRequest("getDefaultConfigXML", Method.POST, DataFormat.Xml);
-            AddQueryParameter(req, "meetingID", configXML);
-            AddQueryChecksum(req, "setDefaultConfigXML");
+            IRestRequest req = new RestRequest("setConfigXML", Method.POST, DataFormat.Xml);
+            AddQueryParameter(req, "meetingID", meetingID);
+            AddQueryChecksum(req, "setConfigXML");
             req.AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             req.AddHeader("Accept-Encoding", "gzip, deflate, br");
             req.AddXmlBody(configXML);

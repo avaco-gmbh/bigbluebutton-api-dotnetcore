@@ -11,6 +11,22 @@ using System.Web;
 namespace Avaco.BigBlueButton.Api
 {
     /// <summary>
+    /// Defines the supported checksum hash algorithms for BigBlueButton API authentication.
+    /// BigBlueButton 3.x supports SHA1, SHA256, SHA384, and SHA512.
+    /// </summary>
+    public enum ChecksumHashAlgorithm
+    {
+        /// <summary>SHA-1 (40-character hex output). Supported by BBB 2.x and 3.x.</summary>
+        SHA1,
+        /// <summary>SHA-256 (64-character hex output). Supported by BBB 2.6+ and 3.x.</summary>
+        SHA256,
+        /// <summary>SHA-384 (96-character hex output). Supported by BBB 2.6+ and 3.x.</summary>
+        SHA384,
+        /// <summary>SHA-512 (128-character hex output). Supported by BBB 2.6+ and 3.x.</summary>
+        SHA512
+    }
+
+    /// <summary>
     /// This class provides some base base methods for a big blue button client adapter
     /// </summary>
     public class BigBlueButtonApiBase 
@@ -26,13 +42,20 @@ namespace Avaco.BigBlueButton.Api
         protected string Secret { get; private set; }
 
         /// <summary>
-        /// A constructor utilizing a host as well as a secret to setup a connetion to a big blue button server
+        /// The hash algorithm used for checksum generation. Defaults to SHA256 for BBB 3.x compatibility.
+        /// </summary>
+        protected ChecksumHashAlgorithm HashAlgorithm { get; private set; }
+
+        /// <summary>
+        /// A constructor utilizing a host as well as a secret to setup a connetion to a big blue button server.
+        /// Uses SHA1 checksum algorithm by default for backward compatibility with BBB 2.x.
         /// </summary>
         /// <param name="host"> The server host </param>
         /// <param name="secret"> The secret used for authentication</param>
         public BigBlueButtonApiBase (string host, string secret) {
             Initialize (host, false);
             Secret = secret;
+            HashAlgorithm = ChecksumHashAlgorithm.SHA1;
         }
 
         /// <summary>
@@ -40,10 +63,24 @@ namespace Avaco.BigBlueButton.Api
         /// </summary>
         /// <param name="host"> The server host </param>
         /// <param name="secret"> The secret used for authentication</param>
-        /// <parma name="ignoreSslErrors"> An indicator if the connection shall ignore SSL errors like invalid certificates </param>
+        /// <param name="ignoreSslErrors"> An indicator if the connection shall ignore SSL errors like invalid certificates </param>
         public BigBlueButtonApiBase (string host, string secret, bool ignoreSslErrors) {
             Initialize (host, ignoreSslErrors);
             Secret = secret;
+            HashAlgorithm = ChecksumHashAlgorithm.SHA1;
+        }
+
+        /// <summary>
+        /// A constructor utilizing a host, secret, and hash algorithm to setup a connection to a big blue button server
+        /// </summary>
+        /// <param name="host"> The server host </param>
+        /// <param name="secret"> The secret used for authentication</param>
+        /// <param name="ignoreSslErrors"> An indicator if the connection shall ignore SSL errors like invalid certificates </param>
+        /// <param name="hashAlgorithm"> The hash algorithm to use for checksum generation </param>
+        public BigBlueButtonApiBase (string host, string secret, bool ignoreSslErrors, ChecksumHashAlgorithm hashAlgorithm) {
+            Initialize (host, ignoreSslErrors);
+            Secret = secret;
+            HashAlgorithm = hashAlgorithm;
         }
 
         /// <summary>
@@ -63,21 +100,36 @@ namespace Avaco.BigBlueButton.Api
         /// <summary>
         /// This function generates the checksum for the big blue button request, this is used as a authorization 
         /// method for each call to the big blue button server.
-        /// For more inforation please have a look into http://docs.bigbluebutton.org/dev/api.html
+        /// For more information please have a look into https://docs.bigbluebutton.org/development/api/
         /// </summary>
         /// <param name="name"> The name of the api call </param>
         /// <param name="query"> The query string that is passed to the api call</param>
         /// <returns>The generated checksum</returns>
         public string CreateChecksum (string name, string query) {
-            var sha = new SHA1Managed ();
-            sha.ComputeHash (Encoding.UTF8.GetBytes ($"{name}{query}{Secret}"));
-            return string.Concat (sha.Hash.Select (b => b.ToString ("x2")));
+            var data = Encoding.UTF8.GetBytes ($"{name}{query}{Secret}");
+            byte[] hash;
+            switch (HashAlgorithm)
+            {
+                case ChecksumHashAlgorithm.SHA256:
+                    using (var sha256 = SHA256.Create()) { hash = sha256.ComputeHash(data); }
+                    break;
+                case ChecksumHashAlgorithm.SHA384:
+                    using (var sha384 = SHA384.Create()) { hash = sha384.ComputeHash(data); }
+                    break;
+                case ChecksumHashAlgorithm.SHA512:
+                    using (var sha512 = SHA512.Create()) { hash = sha512.ComputeHash(data); }
+                    break;
+                default:
+                    using (var sha1 = SHA1.Create()) { hash = sha1.ComputeHash(data); }
+                    break;
+            }
+            return string.Concat (hash.Select (b => b.ToString ("x2")));
         }
 
         /// <summary>
         /// This function generates the checksum for the big blue button request, this is used as a authorization 
         /// method for each call to the big blue button server.
-        /// For more inforation please have a look into http://docs.bigbluebutton.org/dev/api.html
+        /// For more information please have a look into https://docs.bigbluebutton.org/development/api/
         /// </summary>
         /// <param name="name"> The name of the api call </param>
         /// <param name="parameters"> A list of Parameter objects taken from the RestSharp client</param>
